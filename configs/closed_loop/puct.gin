@@ -1,0 +1,96 @@
+# Parameters for Atari:
+# ==============================================================================
+Atari.game = 'alien'
+
+# Parameters for KerasNetwork:
+# ==============================================================================
+KerasNetwork.loss = ('mean_squared_error', 'categorical_crossentropy')
+KerasNetwork.loss_weights = [1.0, 0.001]
+KerasNetwork.metrics = [['mae', 'mse'], ['categorical_crossentropy']]
+KerasNetwork.model_fn = @alpacka.networks.keras.convnet_dqn
+KerasNetwork.optimizer = 'adam'
+KerasNetwork.weight_decay = 0.0
+KerasNetwork.train_callbacks = None
+
+# Parameters for ProcessBatchStepper:
+# ==============================================================================
+# None.
+
+# Parameters for StochasticMCTSAgent:
+# ==============================================================================
+StochasticMCTSAgent.discount = 0.99
+StochasticMCTSAgent.exploration_bonus_fn = @alpacka.agents.mcts.puct_exploration_bonus
+StochasticMCTSAgent.exploration_weight = 1.0
+StochasticMCTSAgent.n_passes = 30
+StochasticMCTSAgent.new_leaf_rater_class = @alpacka.agents.stochastic_mcts.QualityNetworkNewLeafRater
+StochasticMCTSAgent.sampling_temperature = 0.2
+StochasticMCTSAgent.prior_noise_weight = 0.0
+StochasticMCTSAgent.prior_noise_parameter = 0.3
+StochasticMCTSAgent.callback_classes = ()
+StochasticMCTSAgent.depth_limit = 20
+StochasticMCTSAgent.n_leaves_to_expand = 1
+
+# Parameters for convnet_dqn:
+# ==============================================================================
+convnet_dqn.d_conv = 16
+convnet_dqn.d_ff = 64
+convnet_dqn.output_activation = (None, 'softmax')
+convnet_dqn.output_zero_init = True
+
+# Parameters for QualityNetworkNewLeafRater:
+# ==============================================================================
+QualityNetworkNewLeafRater.use_policy = True
+
+# Parameters for Runner:
+# ==============================================================================
+Runner.agent_class = @alpacka.agents.StochasticMCTSAgent
+Runner.batch_stepper_class = @alpacka.batch_steppers.ProcessBatchStepper
+Runner.env_class = @alpacka.envs.wrap()
+Runner.n_envs = 24
+Runner.episode_time_limit = 1000
+Runner.n_epochs = 460
+Runner.n_precollect_epochs = 10
+Runner.network_class = @alpacka.networks.KerasNetwork
+Runner.trainer_class = @alpacka.trainers.SupervisedTrainer
+
+# Parameters for wrap:
+# ==============================================================================
+wrap.env_class = @alpacka.envs.Atari
+wrap.wrapper_classes = (
+    @alpacka.envs.StateCachingWrapper,
+    @alpacka.envs.FrameStackWrapper,
+)
+
+# Parameters for StateCachingWrapper:
+# ==============================================================================
+StateCachingWrapper.capacity = 2000
+
+# Parameters for FrameStackWrapper:
+# ==============================================================================
+FrameStackWrapper.n_frames = 4
+FrameStackWrapper.axis = -1
+FrameStackWrapper.concatenate = True
+
+# Parameters for SupervisedTrainer:
+# ==============================================================================
+SupervisedTrainer.input = @alpacka.trainers.supervised.input_observation
+SupervisedTrainer.target = (
+    @alpacka.trainers.supervised.target_qualities,
+    @alpacka.trainers.supervised.target_action_histogram_smooth,
+)
+SupervisedTrainer.mask = (
+    @alpacka.trainers.supervised.mask_action,
+    @alpacka.trainers.supervised.mask_one,
+)
+SupervisedTrainer.batch_size = 64
+SupervisedTrainer.n_steps_per_epoch = 1000
+SupervisedTrainer.replay_buffer_capacity = 30000
+SupervisedTrainer.replay_buffer_sampling_hierarchy = []
+
+# Parameters for target_qualities:
+# ==============================================================================
+# None.
+
+# Parameters for target_action_histogram_smooth:
+# ==============================================================================
+# None.

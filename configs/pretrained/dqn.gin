@@ -1,0 +1,57 @@
+# Parameters for Atari:
+# ==============================================================================
+Atari.game = 'alien'
+Atari.wrapper_kwargs = {
+    'scale_obs': False,
+}
+
+# Parameters for TFMetaGraphNetwork:
+# ==============================================================================
+TFMetaGraphNetwork.model_path = 'dqn/Alien/1/tf_checkpoints/tf_ckpt-199'
+TFMetaGraphNetwork.x_name = 'state_ph:0'
+TFMetaGraphNetwork.y_name = 'Online/fully_connected_1/BiasAdd:0'
+
+# Parameters for ProcessBatchStepper:
+# ==============================================================================
+# None.
+
+# Parameters for EpsilonGreedyAgent:
+# ==============================================================================
+EpsilonGreedyAgent.epsilon = 0.001
+
+# Parameters for QualityNetworkNewLeafRater:
+# ==============================================================================
+QualityNetworkNewLeafRater.use_policy = False
+
+# Parameters for Runner:
+# ==============================================================================
+Runner.agent_class = @alpacka.agents.EpsilonGreedyAgent
+Runner.batch_stepper_class = @alpacka.batch_steppers.ProcessBatchStepper
+Runner.env_class = @alpacka.envs.wrap()
+Runner.n_envs = 24
+Runner.episode_time_limit = 100000
+Runner.n_epochs = None
+Runner.n_precollect_epochs = 0
+Runner.network_class = @alpacka.networks.TFMetaGraphNetwork
+Runner.trainer_class = @alpacka.trainers.DummyTrainer
+Runner.callback_classes = ()
+
+# Parameters for wrap:
+# ==============================================================================
+wrap.env_class = @alpacka.envs.Atari
+wrap.wrapper_classes = (
+    #@alpacka.envs.StateCachingWrapper,
+    @alpacka.envs.FrameStackWrapper,
+)
+
+# Parameters for FrameStackWrapper:
+# ==============================================================================
+FrameStackWrapper.n_frames = 4
+FrameStackWrapper.axis = -1
+FrameStackWrapper.concatenate = True
+
+# Parameters for TraceCallback:
+# ==============================================================================
+TraceCallback.output_dir = './traces/'
+TraceCallback.sample_rate = 1.0
+TraceCallback.n_traced_passes = 5

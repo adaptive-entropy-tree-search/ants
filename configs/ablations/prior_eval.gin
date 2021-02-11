@@ -1,0 +1,83 @@
+# Parameters for Atari:
+# ==============================================================================
+Atari.game = 'alien'
+Atari.wrapper_kwargs = {
+    'scale_obs': False,
+}
+
+# Parameters for TFMetaGraphNetwork:
+# ==============================================================================
+TFMetaGraphNetwork.model_path = 'dqn/Alien/1/tf_checkpoints/tf_ckpt-199'
+TFMetaGraphNetwork.x_name = 'state_ph:0'
+TFMetaGraphNetwork.y_name = 'Online/fully_connected_1/BiasAdd:0'
+
+# Parameters for ProcessBatchStepper:
+# ==============================================================================
+# None.
+
+# Parameters for MaxEntTreeSearchAgent:
+# ==============================================================================
+MaxEntTreeSearchAgent.discount = 0.99
+MaxEntTreeSearchAgent.n_passes = 100
+MaxEntTreeSearchAgent.n_passes_per_tuning = 50
+MaxEntTreeSearchAgent.depth_limit = 50
+MaxEntTreeSearchAgent.new_leaf_rater_class = @alpacka.agents.mets.SoftQualityNetworkNewLeafRater
+MaxEntTreeSearchAgent.temperature_tuner_class = @alpacka.agents.mets.MeanEntropyTuner
+MaxEntTreeSearchAgent.soft_iteration_class = @alpacka.agents.mets.SoftQIteration
+MaxEntTreeSearchAgent.reference_temperature = 10.0
+MaxEntTreeSearchAgent.model_selection_temperature = 1.0
+MaxEntTreeSearchAgent.model_selection_tolerance = 1.0
+MaxEntTreeSearchAgent.real_selection_temperature = 0.001
+MaxEntTreeSearchAgent.log_temperature_decay = 0.9
+MaxEntTreeSearchAgent.init_quality = %InitQuality.log_prior
+MaxEntTreeSearchAgent.target_policy_class = @alpacka.agents.mets.MentsTargetPolicy
+MaxEntTreeSearchAgent.categorical_entropy_class = @alpacka.math.ShannonCategoricalEntropy
+
+# Parameters for MentsTargetPolicy:
+# ==============================================================================
+MentsTargetPolicy.epsilon = 0.01
+
+# Parameters for MeanEntropyTuner:
+# ==============================================================================
+MeanEntropyTuner.target_entropy = 0.2
+MeanEntropyTuner.min_temperature = 0.01
+
+# Parameters for SoftPolicyIteration:
+# ==============================================================================
+SoftQIteration.pseudoreward_shaping = 1.0
+
+# Parameters for Runner:
+# ==============================================================================
+Runner.agent_class = @alpacka.agents.MaxEntTreeSearchAgent
+Runner.batch_stepper_class = @alpacka.batch_steppers.ProcessBatchStepper
+Runner.env_class = @alpacka.envs.wrap()
+Runner.n_envs = 24
+Runner.episode_time_limit = 10000
+Runner.n_epochs = 1
+Runner.n_precollect_epochs = 0
+Runner.network_class = @alpacka.networks.TFMetaGraphNetwork
+Runner.trainer_class = @alpacka.trainers.DummyTrainer
+Runner.callback_classes = ()
+
+# Parameters for wrap:
+# ==============================================================================
+wrap.env_class = @alpacka.envs.Atari
+wrap.wrapper_classes = (
+    @alpacka.envs.StateCachingWrapper,
+    @alpacka.envs.FrameStackWrapper,
+)
+
+# Parameters for StateCachingWrapper:
+# ==============================================================================
+StateCachingWrapper.capacity = 2000
+
+# Parameters for FrameStackWrapper:
+# ==============================================================================
+FrameStackWrapper.n_frames = 4
+FrameStackWrapper.axis = -1
+FrameStackWrapper.concatenate = True
+
+# Parameters for QualityNetworkNewLeafRater:
+# ==============================================================================
+SoftQualityNetworkNewLeafRater.inject_log_temperature = False
+SoftQualityNetworkNewLeafRater.boltzmann_temperature = 0.01

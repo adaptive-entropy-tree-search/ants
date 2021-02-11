@@ -1,0 +1,108 @@
+# Parameters for Atari:
+# ==============================================================================
+Atari.game = 'alien'
+
+# Parameters for KerasNetwork:
+# ==============================================================================
+KerasNetwork.loss = 'mean_squared_error'
+KerasNetwork.loss_weights = None
+KerasNetwork.metrics = ['mae', 'mse']
+KerasNetwork.model_fn = @alpacka.networks.keras.convnet_dqn
+KerasNetwork.optimizer = 'adam'
+KerasNetwork.weight_decay = 0.0
+KerasNetwork.train_callbacks = None
+
+# Parameters for ProcessBatchStepper:
+# ==============================================================================
+# None.
+
+# Parameters for MaxEntTreeSearchAgent:
+# ==============================================================================
+MaxEntTreeSearchAgent.discount = 0.99
+MaxEntTreeSearchAgent.n_passes = 30
+MaxEntTreeSearchAgent.n_passes_per_tuning = 10
+MaxEntTreeSearchAgent.depth_limit = 20
+MaxEntTreeSearchAgent.new_leaf_rater_class = @alpacka.agents.mets.SoftQualityNetworkNewLeafRater
+MaxEntTreeSearchAgent.soft_iteration_class = @alpacka.agents.mets.SoftQIteration
+MaxEntTreeSearchAgent.reference_temperature = 10.0
+MaxEntTreeSearchAgent.temperature_tuner_class = @alpacka.agents.mets.MeanEntropyTuner
+MaxEntTreeSearchAgent.model_selection_temperature = 1.0
+MaxEntTreeSearchAgent.model_selection_tolerance = 1.0
+MaxEntTreeSearchAgent.real_selection_temperature = 0.5
+MaxEntTreeSearchAgent.log_temperature_decay = 0.9
+MaxEntTreeSearchAgent.init_quality = %InitQuality.quality
+MaxEntTreeSearchAgent.target_policy_class = @alpacka.agents.mets.MentsTargetPolicy
+MaxEntTreeSearchAgent.categorical_entropy_class = @alpacka.math.ShannonCategoricalEntropy
+
+# Parameters for MentsTargetPolicy:
+# ==============================================================================
+MentsTargetPolicy.epsilon = 0.01
+
+# Parameters for SoftPolicyIteration:
+# ==============================================================================
+SoftQIteration.pseudoreward_shaping = 1.0
+
+# Parameters for MeanEntropyTuner:
+# ==============================================================================
+MeanEntropyTuner.target_entropy = 0.2
+MeanEntropyTuner.min_temperature = 0.01
+
+# Parameters for convnet_dqn:
+# ==============================================================================
+convnet_dqn.d_conv = 16
+convnet_dqn.d_ff = 64
+convnet_dqn.output_activation = None
+convnet_dqn.output_zero_init = True
+convnet_dqn.aux_input_injector = @alpacka.networks.keras.additive_injector
+
+# Parameters for QualityNetworkNewLeafRater:
+# ==============================================================================
+SoftQualityNetworkNewLeafRater.inject_log_temperature = True
+SoftQualityNetworkNewLeafRater.boltzmann_temperature = 0.1
+
+# Parameters for Runner:
+# ==============================================================================
+Runner.agent_class = @alpacka.agents.MaxEntTreeSearchAgent
+Runner.batch_stepper_class = @alpacka.batch_steppers.ProcessBatchStepper
+Runner.env_class = @alpacka.envs.wrap()
+Runner.n_envs = 24
+Runner.episode_time_limit = 1000
+Runner.n_epochs = 460
+Runner.n_precollect_epochs = 10
+Runner.network_class = @alpacka.networks.KerasNetwork
+Runner.trainer_class = @alpacka.trainers.SupervisedTrainer
+
+# Parameters for wrap:
+# ==============================================================================
+wrap.env_class = @alpacka.envs.Atari
+wrap.wrapper_classes = (
+    @alpacka.envs.StateCachingWrapper,
+    @alpacka.envs.FrameStackWrapper,
+)
+
+# Parameters for StateCachingWrapper:
+# ==============================================================================
+StateCachingWrapper.capacity = 2000
+
+# Parameters for FrameStackWrapper:
+# ==============================================================================
+FrameStackWrapper.n_frames = 4
+FrameStackWrapper.axis = -1
+FrameStackWrapper.concatenate = True
+
+# Parameters for SupervisedTrainer:
+# ==============================================================================
+SupervisedTrainer.input = (
+    @alpacka.trainers.supervised.input_observation,
+    @alpacka.trainers.supervised.input_log_temperature,
+)
+SupervisedTrainer.target = @alpacka.trainers.supervised.target_qualities
+SupervisedTrainer.mask = @alpacka.trainers.supervised.mask_action
+SupervisedTrainer.batch_size = 64
+SupervisedTrainer.n_steps_per_epoch = 1000
+SupervisedTrainer.replay_buffer_capacity = 30000
+SupervisedTrainer.replay_buffer_sampling_hierarchy = []
+
+# Parameters for target_qualities:
+# ==============================================================================
+# None.

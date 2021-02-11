@@ -1,0 +1,71 @@
+# Parameters for Atari:
+# ==============================================================================
+Atari.game = 'alien'
+Atari.wrapper_kwargs = {
+    'scale_obs': False,
+}
+
+# Parameters for TFMetaGraphNetwork:
+# ==============================================================================
+TFMetaGraphNetwork.model_path = 'dqn/Alien/1/tf_checkpoints/tf_ckpt-199'
+TFMetaGraphNetwork.x_name = 'state_ph:0'
+TFMetaGraphNetwork.y_name = 'Online/fully_connected_1/BiasAdd:0'
+
+# Parameters for ProcessBatchStepper:
+# ==============================================================================
+# None.
+
+# Parameters for StochasticMCTSAgent:
+# ==============================================================================
+StochasticMCTSAgent.discount = 0.99
+StochasticMCTSAgent.exploration_bonus_fn = @alpacka.agents.mcts.puct_exploration_bonus
+StochasticMCTSAgent.exploration_weight = 1.0
+StochasticMCTSAgent.n_passes = 100
+StochasticMCTSAgent.new_leaf_rater_class = @alpacka.agents.stochastic_mcts.QualityNetworkNewLeafRater
+StochasticMCTSAgent.sampling_temperature = 0.001
+StochasticMCTSAgent.prior_noise_weight = 0.0
+StochasticMCTSAgent.prior_noise_parameter = 0.3
+StochasticMCTSAgent.callback_classes = ()
+StochasticMCTSAgent.depth_limit = 50
+StochasticMCTSAgent.n_leaves_to_expand = 1
+
+# Parameters for puct_exploration_bonus:
+# ==============================================================================
+# None.
+
+# Parameters for QualityNetworkNewLeafRater:
+# ==============================================================================
+QualityNetworkNewLeafRater.use_policy = False
+QualityNetworkNewLeafRater.boltzmann_temperature = 1.0
+
+# Parameters for Runner:
+# ==============================================================================
+Runner.agent_class = @alpacka.agents.StochasticMCTSAgent
+Runner.batch_stepper_class = @alpacka.batch_steppers.ProcessBatchStepper
+Runner.env_class = @alpacka.envs.wrap()
+Runner.env_kwargs = {}
+Runner.n_envs = 25
+Runner.episode_time_limit = 10000
+Runner.n_epochs = 4
+Runner.n_precollect_epochs = 0
+Runner.network_class = @alpacka.networks.TFMetaGraphNetwork
+Runner.trainer_class = @alpacka.trainers.DummyTrainer
+Runner.callback_classes = ()
+
+# Parameters for wrap:
+# ==============================================================================
+wrap.env_class = @alpacka.envs.Atari
+wrap.wrapper_classes = (
+    @alpacka.envs.StateCachingWrapper,
+    @alpacka.envs.FrameStackWrapper,
+)
+
+# Parameters for StateCachingWrapper:
+# ==============================================================================
+StateCachingWrapper.capacity = 2000
+
+# Parameters for FrameStackWrapper:
+# ==============================================================================
+FrameStackWrapper.n_frames = 4
+FrameStackWrapper.axis = -1
+FrameStackWrapper.concatenate = True
