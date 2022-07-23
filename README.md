@@ -65,6 +65,9 @@ python -m alpacka.runner \
 
 ## Results
 
+### Closed-loop training
+![](images/e2e.png)
+
 ### Pre-trained networks
 
 | game     | PUCT | MENTS | TENTS | ANTS-S | ANTS-T |
@@ -90,9 +93,6 @@ python -m alpacka.runner \
 | Seaquest    | 3269.7 | 1763.6 | 1532.7 | 2557.4 | 2656.4  |
 | SpaceInvaders    | 4629.6 | 2042.6 | 2023.6 | 4713.5 | 4453.4  |
 | WizardOfWor    | 11834.0 | 7063.0 | 8030.0 | 12937.0 | 13386.0  |
-
-### Closed-loop training
-![](images/e2e.png)
 
 ### Robustness
 ![](images/robustness.png)
