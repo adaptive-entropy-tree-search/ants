@@ -1,6 +1,6 @@
 # Adaptive Entropy Tree Search
 
-This repository contains code for the paper Robust Planning using Adaptive Entropy Tree Search, under review for NeurIPS 2021.
+This repository contains code for the paper Planning and Learning using Adaptive Entropy Tree Search, accepted for IJCNN 2022.
 
 ## Install
 
@@ -94,5 +94,5 @@ python -m alpacka.runner \
 ### Closed-loop training
 ![](images/e2e.png)
 
-### Ablations
-![](images/ablations.png)
+### Robustness
+![](images/robustness.png)
